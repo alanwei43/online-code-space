@@ -51,7 +51,6 @@ app.prepare().then(() => {
       socket: socket,
       socketHeaders: header
     });
-    console.log("upgrade: ", response);
   });
   svr.listen(port, (err) => {
     if (err) throw err
