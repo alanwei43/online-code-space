@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build:lib": "tsc -p library/tsconfig.json",
+    "build:next": "next build",
+    "build": "npm run build:lib && npm run build:next",
     "start:old": "next start",
     "start": "npm run build && NODE_ENV=production node server.js",
     "lint": "next lint"

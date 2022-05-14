@@ -1,7 +1,8 @@
 // server.js
-const { createServer } = require('http')
-const { parse } = require('url')
-const next = require('next')
+const { createServer } = require('http');
+const { parse } = require('url');
+const next = require('next');
+const { doProxyContainer } = require("./library")
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -11,7 +12,7 @@ const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
 app.prepare().then(() => {
-  createServer(async (req, res) => {
+  const svr = createServer(async (req, res) => {
     try {
       // Be sure to pass `true` as the second argument to `url.parse`.
       // This tells it to parse the query portion of the URL.
@@ -19,19 +20,41 @@ app.prepare().then(() => {
       const { pathname, query } = parsedUrl;
 
       if (pathname === '/home') {
-        res.end("hello");
-      } else if (pathname === '/b') {
-        await app.render(req, res, '/b', query)
-      } else {
-        await handle(req, res, parsedUrl)
+        await app.render(req, res, '/home', query)
+        return;
       }
+      if (pathname.startsWith("/_editor")) {
+        doProxyContainer({
+          request: req,
+          response: res
+        });
+        return;
+      }
+      if (pathname.startsWith("/app")) {
+        doProxyContainer({
+          request: req,
+          response: res,
+        });
+        return;
+      }
+
+      await handle(req, res, parsedUrl)
     } catch (err) {
       console.error('Error occurred handling', req.url, err)
       res.statusCode = 500
       res.end('internal server error')
     }
-  }).listen(port, (err) => {
+  });
+  svr.on("upgrade", async (req, socket, header) => {
+    const response = await doProxyContainer({
+      request: req,
+      socket: socket,
+      socketHeaders: header
+    });
+    console.log("upgrade: ", response);
+  });
+  svr.listen(port, (err) => {
     if (err) throw err
     console.log(`> Ready on http://${hostname}:${port}`)
-  })
+  });
 })

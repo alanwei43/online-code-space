@@ -1,5 +1,6 @@
 export interface GetContainerConfigResult {
   containerNamePrefix: string
+  editorPort: number
 }
 
 /**
@@ -8,6 +9,7 @@ export interface GetContainerConfigResult {
  */
 export function getContainerConfig(): GetContainerConfigResult {
   return {
-    containerNamePrefix: "app-"
+    containerNamePrefix: "app-",
+    editorPort: 8080
   };
 }
