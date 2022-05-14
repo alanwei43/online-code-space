@@ -1,0 +1,18 @@
+{
+  "React TypeScript Function Component": {
+    "prefix": "react-ts-fn-component",
+    "body": [
+      " import { FC, ReactElement, ReactChild } from \"react\"; ",
+      " /** ",
+      "  *  ",
+      "  * @date $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE ",
+      "  */ ",
+      " const ${TM_FILENAME_BASE} : FC<${TM_FILENAME_BASE}Props> = (props): ReactElement => { ",
+      "   return (<div>{props.children}</div>)",
+      " } ",
+      " export type ${TM_FILENAME_BASE}Props = { children: ReactChild }",
+      " export default ${TM_FILENAME_BASE};"
+    ],
+    "description": "create react typescript class component"
+  }
+}
