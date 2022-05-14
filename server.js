@@ -51,6 +51,9 @@ app.prepare().then(() => {
       socket: socket,
       socketHeaders: header
     });
+    if (!response.success) {
+      console.log(`web socket proxy fail: ${response.message}, request url: ${req.url}`);
+    }
   });
   svr.listen(port, (err) => {
     if (err) throw err
