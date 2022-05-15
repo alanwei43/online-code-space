@@ -17,7 +17,7 @@ export default class ContainerList extends React.Component<ContainerListProps, C
   }
 
   refreshList() {
-    fetch("/api/listContainers", { method: "GET" })
+    fetch("/api/listContainers?refresh=true", { method: "GET" })
       .then(res => res.json())
       .then((res: { success: boolean, result: Array<ContainerInformation> }) => {
         this.setState({
@@ -59,7 +59,8 @@ export default class ContainerList extends React.Component<ContainerListProps, C
                 <td>{c.ip}</td>
                 <td>
                   <button className="btn btn-primary btn-sm" onClick={() => this.actionStart(c)}>启动</button> &nbsp;
-                  <button className="btn btn-warning btn-sm">停止</button> &nbsp;
+                  <button className="btn btn-warning btn-sm" onClick={() => this.actionStop(c)}>停止</button> &nbsp;
+                  <button className="btn btn-warning btn-sm" onClick={() => this.actionDelete(c)}>删除</button> &nbsp;
                   {c.ports.map(port => (
                     <>
                       <a href={`/_app/${c.id}/${port.privatePort}/?__container-id=${c.id}`} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">访问 {port.privatePort}</a> &nbsp;
@@ -79,7 +80,23 @@ export default class ContainerList extends React.Component<ContainerListProps, C
       method: "GET"
     });
     const data = await response.json();
-    console.log(response);
+    console.log(data);
+    this.refreshList();
+  }
+  async actionDelete(container: ContainerInformation) {
+    const response = await fetch(`/api/rmContainer?id=${container.id}`, {
+      method: "GET"
+    });
+    const data = await response.json();
+    console.log(data);
+    this.refreshList();
+  }
+  async actionStop(container: ContainerInformation) {
+    const response = await fetch(`/api/shutdownContainer?id=${container.id}`, {
+      method: "GET"
+    });
+    const data = await response.json();
+    console.log(data);
     this.refreshList();
   }
 }

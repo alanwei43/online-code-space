@@ -19,13 +19,14 @@ export default async function newContainer(
   }
 
   const body: CreateContainerParams = request.body;
-  const container = await createContainer(body);
+  const { success, msg, result } = await createContainer(body);
   response.status(200)
     .json({
-      success: true,
+      success: success,
+      msg: msg,
       result: {
         ...body,
-        id: container.id,
+        id: result && result.id,
       }
     });
 }

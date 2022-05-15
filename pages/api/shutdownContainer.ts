@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { startContainer } from "../../library/";
+import { stopContainer } from "../../library";
 
 /**
  * 
  * @date 2022-05-15
  */
-export default async function bootContainer(
+export default async function shutdownContainer(
   request: NextApiRequest,
   response: NextApiResponse<ResponseData>
 ): Promise<void> {
@@ -17,7 +17,7 @@ export default async function bootContainer(
     return;
   }
   const containerId: string = request.query.id + "";
-  const result = await startContainer(containerId);
+  const result = await stopContainer(containerId);
   response.status(200)
     .json({
       success: true,

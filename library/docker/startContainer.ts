@@ -1,6 +1,6 @@
 import { getDockerInstance } from "./getDockerInstance"
 
-export type StartContainerResult = void
+export type StartContainerResult = string
 
 /**
  * 启动容器
@@ -10,5 +10,5 @@ export async function startContainer(id: string): Promise<StartContainerResult> 
   const docker = getDockerInstance();
   const container = docker.getContainer(id);
   const doStart = await container.start({});
-  console.log("doStart: ", doStart + "");
+  return doStart + "";
 }

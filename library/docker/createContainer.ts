@@ -2,6 +2,8 @@ import { getContainerConfig } from "./getContainerConfig";
 import { getContainerRunTimes } from "./getContainerRunTimes";
 import { getDockerInstance } from "./getDockerInstance";
 import type { Container } from "dockerode";
+import { getAllContainers } from "./getAllContainers";
+import { Protocol } from "../utils/";
 
 export type CreateContainerParams = {
   name: string
@@ -13,13 +15,24 @@ export interface CreateContainerResult { }
  * 创建容器
  * @date 2022-05-14
  */
-export async function createContainer(params: CreateContainerParams): Promise<Container> {
+export async function createContainer(params: CreateContainerParams): Promise<Protocol<Container>> {
   const allRuntimes = getContainerRunTimes();
   const config = getContainerConfig();
 
   const rt = allRuntimes[params.runtime];
   if (!rt) {
-    return Promise.reject(new Error(`不存在该运行时: ${params.runtime}`));
+    return {
+      success: false,
+      msg: `不存在该运行时: ${params.runtime}`
+    };
+  }
+  params.name = params.name.replace(/\W/g, "-");
+  const containers = await getAllContainers();
+  if (containers.find(c => c.name === params.name)) {
+    return {
+      success: false,
+      msg: `应用已经存在 ${params.name}`
+    };
   }
   const options = {
     name: `${config.containerNamePrefix}${params.name}`,
@@ -40,5 +53,8 @@ export async function createContainer(params: CreateContainerParams): Promise<Co
   };
   const docker = getDockerInstance();
   const container = await docker.createContainer(options);
-  return container;
+  return {
+    success: true,
+    result: container
+  }
 }
