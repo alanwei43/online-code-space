@@ -27,11 +27,11 @@ export async function doProxyContainer(
   const config = getContainerConfig();
   // const parsedUrl = parse(params.request.url + "", true);
   // const { pathname, query } = parsedUrl;
-  const [_, appId, realUrl] = /^\/[_-\w\d]+\/([\w\d]+)(.*)$/g.exec(params.request.url + "") || [];
-  if (!appId) {
+  const [_prefix, appId, appPort, realUrl] = /^\/[_-\w\d]+\/([\w\d]+)\/(\d+)(.*)$/g.exec(params.request.url + "") || [];
+  if (!appId || !appPort) {
     const data = {
       success: false,
-      message: `not found id in pathname`
+      message: `not found appId or appPort from ${params.request.url}`
     };
     params.response && writeResponoseJson(params.response, data);
     return data;
@@ -47,9 +47,13 @@ export async function doProxyContainer(
     params.response && writeResponoseJson(params.response, data);
     return data;
   }
-  const targetOrigin = `http://${container.ip}:${config.editorPort}`;
+  const targetOrigin = `http://${container.ip}:${appPort || "8080"}`;
 
-  params.request.url = realUrl || "/";
+  let targetUrl: string = realUrl || "/";
+  if (!targetUrl.startsWith("/")) {
+    targetUrl = "/" + targetUrl;
+  }
+  params.request.url = targetUrl;
   if (params.socket) {
 
     /**

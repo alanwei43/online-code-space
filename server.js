@@ -6,7 +6,7 @@ const { doProxyContainer } = require("./library")
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
-const port = 3000;
+const port = 8095;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
@@ -19,21 +19,14 @@ app.prepare().then(() => {
       const parsedUrl = parse(req.url, true);
       const { pathname, query } = parsedUrl;
 
-      if (pathname === '/home') {
-        await app.render(req, res, '/home', query)
+      if (pathname === '/manager') {
+        await app.render(req, res, '/manager', query);
         return;
       }
-      if (pathname.startsWith("/_editor")) {
+      if (pathname.startsWith("/_app")) {
         doProxyContainer({
           request: req,
           response: res
-        });
-        return;
-      }
-      if (pathname.startsWith("/app")) {
-        doProxyContainer({
-          request: req,
-          response: res,
         });
         return;
       }
@@ -59,4 +52,11 @@ app.prepare().then(() => {
     if (err) throw err
     console.log(`> Ready on http://${hostname}:${port}`)
   });
-})
+});
+
+process.on("uncaughtException", ex => {
+  console.log(`uncaughtException: `, ex);
+});
+process.on("unhandledRejection", ex => {
+  console.log(`unhandledRejection: `, ex);
+});

@@ -17,6 +17,10 @@ export function getContainerRunTimes(): Record<string, GetContainerRunTimesResul
     jdk: {
       image: "alanway/code-server:jdk",
       cmd: ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
+    },
+    ideac: {
+      image: "registry.jetbrains.team/p/prj/containers/projector-idea-c",
+      cmd: []
     }
   };
 }

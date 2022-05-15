@@ -1,7 +1,6 @@
 {
   "React TypeScript Class Component": {
     "prefix": "react-ts-class-component",
-    "scope": "tsx",
     "body": [
       " import React from \"react\"; ",
       " /** ",

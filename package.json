@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build:lib": "tsc -p library/tsconfig.json",
     "build:next": "next build",
     "build": "npm run build:lib && npm run build:next",
@@ -12,6 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bootstrap": "^5.1.3",
     "colors": "^1.4.0",
     "date-fns": "^2.14.0",
     "dockerode": "^3.2.0",

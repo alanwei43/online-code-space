@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ContainerInfo, getAllContainers } from "../../library";
+import { ContainerInformation, getAllContainers } from "../../library";
 import { writeResponoseJson } from "../../library/utils";
 
 /**
- * 
+ * 列出所有容器
  * @date 2022-05-14
  */
 export default async function listContainers(

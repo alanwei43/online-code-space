@@ -1,5 +1,4 @@
-
-export interface ContainerInfo {
+export interface ContainerInformation {
   id: string,
   name: string
   state: string,
@@ -10,5 +9,6 @@ export interface ContainerInfo {
     privatePort: number,
     type: string
   }>,
-  data?: any
+  data?: any,
 }
+

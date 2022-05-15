@@ -9,7 +9,7 @@ export default async function newContainer(
   request: NextApiRequest,
   response: NextApiResponse<ResponseData>
 ): Promise<void> {
-  if (request.method?.toUpperCase() !== "post" || !request.body) {
+  if (!request.body) {
     response.status(400)
       .json({
         success: false,
@@ -19,11 +19,14 @@ export default async function newContainer(
   }
 
   const body: CreateContainerParams = request.body;
-  await createContainer(body);
+  const container = await createContainer(body);
   response.status(200)
     .json({
       success: true,
-      result: body
+      result: {
+        ...body,
+        id: container.id,
+      }
     });
 }
 export type ResponseData = {

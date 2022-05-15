@@ -1,8 +1,8 @@
 import { getDockerInstance } from "./getDockerInstance";
-import { ContainerInfo } from "./ContainerInfo";
+import { ContainerInformation } from "./ContainerInformation";
 import { getContainerConfig } from "./getContainerConfig";
 
-export type GetAllContainersResult = Array<ContainerInfo>
+export type GetAllContainersResult = Array<ContainerInformation>
 
 export type GetAllContainersParams = {
   refresh?: boolean
@@ -37,12 +37,12 @@ export const getAllContainers: GetAllContainersDef = async function (refresh?: b
         privatePort: p.PrivatePort,
         type: p.Type
       }));
-      const c: ContainerInfo = {
+      const c: ContainerInformation = {
         id: container.Id,
         name: name,
         state: container.State,
         ip: ip,
-        ports: ports
+        ports: ports,
       };
       return c;
     });
