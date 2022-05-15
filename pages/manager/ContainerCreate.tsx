@@ -1,4 +1,5 @@
 import React from "react";
+import { GetContainerRuntimesItem } from "../../library";
 
 /** 
  *  
@@ -9,20 +10,27 @@ export default class CreateContainer extends React.Component<CreateContainerProp
     super(props);
     this.state = {
       // 初始化状态
-      runtimes: [{
-        id: "node",
-        name: "Visual Studio Code"
-      }, {
-        id: "ideac",
-        name: "IDEA Conmmunity"
-      }],
+      runtimes: [],
       form: {
         name: "",
         runtime: "ideac",
-        git: ""
+        git: "",
+        allowGit: true
       }
     };
   }
+  componentDidMount() {
+    this.initRunTimes();
+  }
+
+  async initRunTimes() {
+    const response = await fetch("/api/getRuntimes", { method: "GET" })
+    const data: { result: Array<GetContainerRuntimesItem> } = await response.json();
+    this.setState({
+      runtimes: data.result
+    });
+  }
+
   render() {
     const { runtimes, form } = this.state;
 
@@ -41,7 +49,7 @@ export default class CreateContainer extends React.Component<CreateContainerProp
             <div className="col-sm-10">
               <select className="form-select" onChange={e => this.updateRuntime(e.target.value)} value={form.runtime}>
                 {runtimes.map(rt =>
-                  <option key={rt.id} value={rt.id}>{rt.name}</option>
+                  <option key={rt.id} value={rt.id}>{rt.description}</option>
                 )}
               </select>
             </div>
@@ -57,17 +65,20 @@ export default class CreateContainer extends React.Component<CreateContainerProp
                 placeholder="应用名称" />
             </div>
           </div>
-          <div className="mb-3 row">
-            <label className="col-sm-2 col-form-label">Git仓库</label>
-            <div className="col-sm-10">
-              <input
-                type="text"
-                className="form-control"
-                value={form.git}
-                onChange={e => this.updateGit(e.target.value)}
-                placeholder="仓库地址" />
+          {
+            form.allowGit &&
+            <div className="mb-3 row">
+              <label className="col-sm-2 col-form-label">Git仓库</label>
+              <div className="col-sm-10">
+                <input
+                  type="text"
+                  className="form-control"
+                  value={form.git}
+                  onChange={e => this.updateGit(e.target.value)}
+                  placeholder="仓库地址" />
+              </div>
             </div>
-          </div>
+          }
           <input type="button" className="btn btn-primary" value="提交" onClick={this.submit.bind(this)} />
         </form>
       </div>
@@ -75,8 +86,13 @@ export default class CreateContainer extends React.Component<CreateContainerProp
   }
 
   updateRuntime(val: string) {
+    const runtime = this.state.runtimes.find(rt => rt.id === val);
+    if (!runtime) {
+      return;
+    }
     const { form } = this.state;
     form.runtime = val;
+    form.allowGit = runtime.allowGit;
     this.setState({ form });
   }
   updateName(val: string): void {
@@ -98,7 +114,7 @@ export default class CreateContainer extends React.Component<CreateContainerProp
       method: "POST",
       body: JSON.stringify({
         ...form,
-        cmd: form.git ? [form.git] : []
+        cmd: form.allowGit && form.git ? [form.git] : []
       }),
       headers: {
         "Content-Type": "application/json"
@@ -110,13 +126,11 @@ export default class CreateContainer extends React.Component<CreateContainerProp
 }
 export type CreateContainerProps = {}
 export type CreateContainerState = {
-  runtimes: Array<{
-    id: string
-    name: string
-  }>
+  runtimes: Array<GetContainerRuntimesItem>
   form: {
     name: string
     runtime: string
     git?: string
+    allowGit?: boolean
   }
 }

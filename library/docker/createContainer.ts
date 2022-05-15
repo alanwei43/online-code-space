@@ -1,5 +1,5 @@
 import { getContainerConfig } from "./getContainerConfig";
-import { getContainerRunTimes } from "./getContainerRunTimes";
+import { getContainerRuntimes } from "./getContainerRunTimes";
 import { getDockerInstance } from "./getDockerInstance";
 import type { Container } from "dockerode";
 import { getAllContainers } from "./getAllContainers";
@@ -18,7 +18,7 @@ export interface CreateContainerResult { }
  */
 export async function createContainer(params: CreateContainerParams): Promise<Protocol<Container>> {
 
-  const allRuntimes = getContainerRunTimes();
+  const allRuntimes = getContainerRuntimes();
   const config = getContainerConfig();
 
   const rt = allRuntimes[params.runtime];
@@ -54,7 +54,6 @@ export async function createContainer(params: CreateContainerParams): Promise<Pr
     // DiskQuota: 1 * 1024/** Byte */ * 1024 /* MB */ * 500,
   };
   const docker = getDockerInstance();
-  // console.log(`create options: ${JSON.stringify(options)}`);
   const container = await docker.createContainer(options);
   return {
     success: true,
