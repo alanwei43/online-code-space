@@ -54,7 +54,7 @@ export async function createContainer(params: CreateContainerParams): Promise<Pr
     // DiskQuota: 1 * 1024/** Byte */ * 1024 /* MB */ * 500,
   };
   const docker = getDockerInstance();
-  console.log(`create options: ${JSON.stringify(options)}`);
+  // console.log(`create options: ${JSON.stringify(options)}`);
   const container = await docker.createContainer(options);
   return {
     success: true,

@@ -16,7 +16,8 @@ export function getContainerRunTimes(): Record<string, GetContainerRunTimesResul
       image: "alanway/code-server:jdk",
     },
     ideac: {
-      image: "registry.jetbrains.team/p/prj/containers/projector-idea-c",
+      // image: "registry.jetbrains.team/p/prj/containers/projector-idea-c",
+      image: "ideac"
     }
   };
 }
