@@ -42,7 +42,7 @@ export async function doProxyContainer(
   if (!container) {
     const data = {
       success: false,
-      message: `not found ${appId}`
+      message: `not found ${appId} in ${containers.map(c => c.id).join(", ")}`
     };
     params.response && writeResponoseJson(params.response, data);
     return data;

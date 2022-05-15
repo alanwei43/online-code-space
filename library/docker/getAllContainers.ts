@@ -17,9 +17,9 @@ export type GetAllContainersDef = {
  * @date 2022-05-14
  */
 export const getAllContainers: GetAllContainersDef = async function (refresh?: boolean): Promise<GetAllContainersResult> {
-  if (getAllContainers.__cache && refresh !== true) {
-    return getAllContainers.__cache;
-  }
+  // if (getAllContainers.__cache && refresh !== true) {
+  //   return getAllContainers.__cache;
+  // }
 
   const docker = getDockerInstance();
   const options: {} = {

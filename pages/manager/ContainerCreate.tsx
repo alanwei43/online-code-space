@@ -18,7 +18,8 @@ export default class CreateContainer extends React.Component<CreateContainerProp
       }],
       form: {
         name: "",
-        runtime: "ideac"
+        runtime: "ideac",
+        git: ""
       }
     };
   }
@@ -48,7 +49,23 @@ export default class CreateContainer extends React.Component<CreateContainerProp
           <div className="mb-3 row">
             <label className="col-sm-2 col-form-label">应用名称</label>
             <div className="col-sm-10">
-              <input type="text" className="form-control" value={form.name} onChange={e => this.updateName(e.target.value)} />
+              <input
+                type="text"
+                className="form-control"
+                value={form.name}
+                onChange={e => this.updateName(e.target.value)}
+                placeholder="应用名称" />
+            </div>
+          </div>
+          <div className="mb-3 row">
+            <label className="col-sm-2 col-form-label">Git仓库</label>
+            <div className="col-sm-10">
+              <input
+                type="text"
+                className="form-control"
+                value={form.git}
+                onChange={e => this.updateGit(e.target.value)}
+                placeholder="仓库地址" />
             </div>
           </div>
           <input type="button" className="btn btn-primary" value="提交" onClick={this.submit.bind(this)} />
@@ -67,6 +84,11 @@ export default class CreateContainer extends React.Component<CreateContainerProp
     form.name = val;
     this.setState({ form });
   }
+  updateGit(val: string): void {
+    const { form } = this.state;
+    form.git = val;
+    this.setState({ form });
+  }
   submit() {
     const { form } = this.state;
     if (!form.name) {
@@ -74,7 +96,10 @@ export default class CreateContainer extends React.Component<CreateContainerProp
     }
     fetch("/api/newContainer", {
       method: "POST",
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        cmd: form.git ? [form.git] : []
+      }),
       headers: {
         "Content-Type": "application/json"
       }
@@ -92,5 +117,6 @@ export type CreateContainerState = {
   form: {
     name: string
     runtime: string
+    git?: string
   }
 }

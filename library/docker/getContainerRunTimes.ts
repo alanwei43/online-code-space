@@ -1,7 +1,6 @@
 export type GetContainerRunTimesParams = {}
 export interface GetContainerRunTimesResult {
   image: string
-  cmd: Array<string>
 }
 
 /**
@@ -11,16 +10,13 @@ export interface GetContainerRunTimesResult {
 export function getContainerRunTimes(): Record<string, GetContainerRunTimesResult> {
   return {
     node: {
-      image: 'alanway/code-server:node',
-      cmd: ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
+      image: 'code-server-local'
     },
     jdk: {
       image: "alanway/code-server:jdk",
-      cmd: ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
     },
     ideac: {
       image: "registry.jetbrains.team/p/prj/containers/projector-idea-c",
-      cmd: []
     }
   };
 }

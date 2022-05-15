@@ -8,6 +8,7 @@ import { Protocol } from "../utils/";
 export type CreateContainerParams = {
   name: string
   runtime: string
+  cmd?: Array<string>
 }
 export interface CreateContainerResult { }
 
@@ -16,6 +17,7 @@ export interface CreateContainerResult { }
  * @date 2022-05-14
  */
 export async function createContainer(params: CreateContainerParams): Promise<Protocol<Container>> {
+
   const allRuntimes = getContainerRunTimes();
   const config = getContainerConfig();
 
@@ -41,7 +43,7 @@ export async function createContainer(params: CreateContainerParams): Promise<Pr
     AttachStdout: false,
     AttachStderr: false,
     Tty: false,
-    Cmd: rt.cmd,
+    Cmd: params.cmd || [],
     OpenStdin: false,
     StdinOnce: false,
     PublishAllPorts: true,
@@ -52,6 +54,7 @@ export async function createContainer(params: CreateContainerParams): Promise<Pr
     // DiskQuota: 1 * 1024/** Byte */ * 1024 /* MB */ * 500,
   };
   const docker = getDockerInstance();
+  console.log(`create options: ${JSON.stringify(options)}`);
   const container = await docker.createContainer(options);
   return {
     success: true,
