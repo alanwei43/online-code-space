@@ -1,6 +1,7 @@
-import { fetch } from "undici";
 import { getConfig } from "./getConfig";
-import { getCaddyFile } from "./getCaddyFile";
+import { fetchJson } from "../utils";
+import { findCaddyRouteById } from "./findCaddyRouteById";
+import { generateReverseProxyRoute } from "./generateReverseProxyRoute";
 
 export type CreateDomainBindParams = {
   subdomain: string
@@ -25,47 +26,17 @@ export async function createDomainBind(params: CreateDomainBindParams): Promise<
   }
 
   const config = getConfig();
-  const caddyFile = await getCaddyFile("/apps/http/servers/srv1/routes");
   const domain = `${params.subdomain}.app.alanwei.com`;
-  if (JSON.stringify(caddyFile).includes(domain)) {
-    return `${domain} 已经被绑定`;
+  const route = await findCaddyRouteById(domain);
+  if (route.result) {
+    return `域名 ${domain} 已经被绑定: ${JSON.stringify(route.result)}`;
   }
 
-  const response = await fetch(`${config.adminUrl}/config/apps/http/servers/srv1/routes`, {
-    method: "POST",
-    body: JSON.stringify({
-      "handle": [
-        {
-          "handler": "subroute",
-          "routes": [
-            {
-              "handle": [
-                {
-                  "handler": "reverse_proxy",
-                  "upstreams": [
-                    {
-                      "dial": `${params.host}:${params.port}`
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "match": [
-        {
-          "host": [
-            domain
-          ]
-        }
-      ],
-      "terminal": true
-    }),
-    headers: {
-      "content-type": "application/json"
-    }
+  const postRoute = generateReverseProxyRoute({
+    "dial": `${params.host}:${params.port}`,
+    "domain": domain
   });
-  const result = await response.text();
-  return result;
+  const url = `${config.adminUrl}/config/apps/http/servers/srv1/routes`;
+  const response = await fetchJson<any>("POST", url, {}, postRoute);
+  return JSON.stringify(response || "");
 }

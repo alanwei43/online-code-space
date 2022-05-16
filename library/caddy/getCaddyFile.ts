@@ -15,23 +15,7 @@ export interface GetCaddyFileResult {
           "logger_names": Record<string, string>,
           "skip_hosts": Array<string>
         },
-        "routes": Array<{
-          "handle": Array<{
-            "handler": "subroute",
-            "routes": Array<{
-              "handle": Array<{
-                "handler": "reverse_proxy",
-                "upstreams": Array<{
-                  "dial": "localhost:8086"
-                }>
-              }>
-            }>
-          }>,
-          "match": Array<{
-            "host": Array<string>
-          }>,
-          "terminal": boolean
-        }>
+        "routes": Array<CaddyRoute>
       }>
     },
     "tls": {
@@ -71,14 +55,32 @@ export interface GetCaddyFileResult {
     }
   }
 }
+export type CaddyRoute = {
+  "@id"?: string
+  "handle": Array<{
+    "handler": "subroute" | "vars" | "file_server",
+    "routes": Array<{
+      "handle": Array<{
+        "handler": "reverse_proxy",
+        "upstreams": Array<{
+          "dial": string
+        }>
+      }>
+    }>
+  }>,
+  "match": Array<{
+    "host": Array<string>
+  }>,
+  "terminal": boolean
+}
 
 /**
  * 
  * @date 2022-05-15
  */
-export async function getCaddyFile(path: string): Promise<GetCaddyFileResult> {
+export async function getCaddyFile(): Promise<GetCaddyFileResult> {
   const config = getConfig();
-  const resonse = await fetch(`${config.adminUrl}/config${path}`)
+  const resonse = await fetch(`${config.adminUrl}/config`)
   const result = await resonse.json() as GetCaddyFileResult;
   return result;
 }

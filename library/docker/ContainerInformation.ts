@@ -10,5 +10,6 @@ export interface ContainerInformation {
     type: string
   }>,
   data?: any,
+  domain?: string
 }
 

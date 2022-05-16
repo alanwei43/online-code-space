@@ -1,5 +1,7 @@
 import React from "react";
-import { ContainerInformation } from "../../library";
+import type { ContainerInformation, Protocol } from "../../library";
+import { fetchJson } from "../../services/utils/fetchJson";
+
 /** 
  *  
  * @date 2022-05-15 
@@ -16,14 +18,14 @@ export default class ContainerList extends React.Component<ContainerListProps, C
     this.refreshList();
   }
 
-  refreshList() {
-    fetch("/api/listContainers?refresh=true", { method: "GET" })
-      .then(res => res.json())
-      .then((res: { success: boolean, result: Array<ContainerInformation> }) => {
-        this.setState({
-          containers: res.result || []
-        });
-      });
+  async refreshList() {
+    const res = await fetchJson<Protocol<Array<ContainerInformation>>>(
+      "GET",
+      "/api/listContainers",
+      { refresh: "true" });
+    this.setState({
+      containers: res.result || []
+    });
   }
 
   render() {
@@ -47,7 +49,9 @@ export default class ContainerList extends React.Component<ContainerListProps, C
               <th>名称</th>
               <th>状态</th>
               <th>IP</th>
-              <th>操作</th>
+              <th>管理容器</th>
+              <th>域名操作</th>
+              <th>端口访问</th>
             </tr>
           </thead>
           <tbody>
@@ -60,12 +64,18 @@ export default class ContainerList extends React.Component<ContainerListProps, C
                 <td>
                   <button className="btn btn-primary btn-sm" onClick={() => this.actionStart(c)}>启动</button> &nbsp;
                   <button className="btn btn-warning btn-sm" onClick={() => this.actionStop(c)}>停止</button> &nbsp;
-                  <button className="btn btn-warning btn-sm" onClick={() => this.actionDelete(c)}>删除</button> &nbsp;
+                  <button className="btn btn-warning btn-sm" onClick={() => this.actionDelete(c)}>删除</button>
+                </td>
+                <td>
                   <button className="btn btn-warning btn-sm" onClick={() => this.bindDomain(c)}>绑定域名</button> &nbsp;
+                  <button className="btn btn-warning btn-sm" onClick={() => this.deleteDomain(c)}>删除域名</button> &nbsp;
                   <a className="btn btn-warning btn-sm"
-                    href={`http://${c.name}.app.alanwei.com`}
+                    title="域名绑定的是80端口(需要手动点击绑定域名)"
+                    href={`http://${c.domain}.app.alanwei.com`}
                     target="_blank"
-                    rel="noreferrer">使用域名访问80端口(需要绑定域名)</a> &nbsp;
+                    rel="noreferrer">域名访问</a>
+                </td>
+                <td>
                   {c.ports.map(port => (
                     <>
                       <a href={`/_app/${c.id}/${port.privatePort}/?__container-id=${c.id}`} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">访问 {port.privatePort}</a> &nbsp;
@@ -77,8 +87,8 @@ export default class ContainerList extends React.Component<ContainerListProps, C
           </tbody>
           <tbody>
             <tr>
-              <td colSpan={5}>
-                Visual Studio Code 编辑器访问 8080 端口, IDEA 编辑器访问 8887 端口.
+              <td colSpan={7}>
+                域名绑定的是80端口. Visual Studio Code 编辑器访问 8080 端口, IDEA 编辑器访问 8887 端口.
               </td>
             </tr>
           </tbody>
@@ -112,20 +122,20 @@ export default class ContainerList extends React.Component<ContainerListProps, C
     this.refreshList();
   }
   async bindDomain(container: ContainerInformation) {
-    const response = await fetch(`/api/bindDomain`, {
-      method: "POST",
-      body: JSON.stringify({
-        subdomain: container.name,
-        host: container.ip,
-        port: 80
-      }),
-      headers: {
-        "content-type": "application/json"
-      }
+    const data = await fetchJson(
+      "POST",
+      `/api/bindDomain`, {}, {
+      subdomain: container.name,
+      host: container.ip,
+      port: 80
     });
-    const data = await response.json();
     alert(JSON.stringify(data));
     this.refreshList();
+  }
+  async deleteDomain(container: ContainerInformation) {
+    // 删除域名绑定
+    const response = await fetchJson<string>("GET", `/api/deleteDomain`, { domain: container.domain + "" });
+    alert(JSON.stringify(response));
   }
 }
 export type ContainerListProps = {}

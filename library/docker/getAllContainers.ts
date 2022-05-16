@@ -43,6 +43,7 @@ export const getAllContainers: GetAllContainersDef = async function (refresh?: b
         state: container.State,
         ip: ip,
         ports: ports,
+        domain: `${name}.app.alanwei.com`
       };
       return c;
     });

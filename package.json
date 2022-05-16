@@ -11,7 +11,8 @@
     "start": "npm run build && NODE_ENV=production node server.js",
     "lint": "next lint",
     "serve": "pm2 start ecosystem.config.js --env production",
-    "stop": "pm2 stop ecosystem.config.js"
+    "stop": "pm2 stop ecosystem.config.js",
+    "restart": "npm run stop && npm run serve"
   },
   "dependencies": {
     "bootstrap": "^5.1.3",
