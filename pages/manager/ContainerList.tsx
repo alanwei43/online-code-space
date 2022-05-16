@@ -71,7 +71,7 @@ export default class ContainerList extends React.Component<ContainerListProps, C
                   <button className="btn btn-warning btn-sm" onClick={() => this.deleteDomain(c)}>删除域名</button> &nbsp;
                   <a className="btn btn-warning btn-sm"
                     title="域名绑定的是80端口(需要手动点击绑定域名)"
-                    href={`http://${c.domain}.app.alanwei.com`}
+                    href={`http://${c.domain}`}
                     target="_blank"
                     rel="noreferrer">域名访问</a>
                 </td>
