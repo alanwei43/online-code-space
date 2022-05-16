@@ -65,7 +65,7 @@ export default class ContainerList extends React.Component<ContainerListProps, C
                   <a className="btn btn-warning btn-sm"
                     href={`http://${c.name}.app.alanwei.com`}
                     target="_blank"
-                    rel="noreferrer">访问80端口(需要绑定域名)</a> &nbsp;
+                    rel="noreferrer">使用域名访问80端口(需要绑定域名)</a> &nbsp;
                   {c.ports.map(port => (
                     <>
                       <a href={`/_app/${c.id}/${port.privatePort}/?__container-id=${c.id}`} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">访问 {port.privatePort}</a> &nbsp;
@@ -74,6 +74,13 @@ export default class ContainerList extends React.Component<ContainerListProps, C
                 </td>
               </tr>
             ))}
+          </tbody>
+          <tbody>
+            <tr>
+              <td colSpan={5}>
+                Visual Studio Code 编辑器访问 8080 端口, IDEA 编辑器访问 8887 端口.
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
